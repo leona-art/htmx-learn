@@ -31,7 +31,7 @@ async fn handler() -> Html<&'static str> {
     </head>
     <body>
         <div hx-get="/component/input" hx-trigger="revealed" hx-swap="outerHTML"></div>
-        <div id="result"></div>
+        
     </body>
     </html>
     "#,
@@ -42,10 +42,13 @@ async fn handler() -> Html<&'static str> {
 async fn input_handler() -> Html<&'static str> {
     Html(
         r##"
-        <form hx-post="/add-task">
-            <input type="text" name="task" hx-target="#result">
-            <button type="submit">送信</button>
-        </form>
+        <div>
+            <form hx-post="/add-task" hx-target="#result" hx-swap="afterbegin">
+                <input type="text" name="task">
+                <button type="submit">送信</button>
+            </form>
+            <div id="result"></div>
+        </div>
     "##,
     )
 }
@@ -56,12 +59,7 @@ struct AddTask {
 }
 async fn add_task(
     Form(task): Form<AddTask>,
-) -> Html<&'static str> {
-    println!("called add_task");
-    println!("task: {}", task.task);
-    Html(
-        r#"
-        <p>タスクを追加しました</p>
-    "#,
-    )
+) -> Html<String> {
+    let html = format!("<p>{}</p>", task.task);
+    Html(html)
 }
